@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="de">
+	<head>
+		<meta charset="utf-8">
+		<title>Sudoku</title>
+		<script src="jquery.min.js"></script>
+		<style>
+			.sudoku_field {
+				text-align: center;
+				vertical-align: middle !important;
+				font-size: large;
+				font-weight: bold;
+				width: 1.8em;
+				height: 1.8em;
+				border: 1px dotted black;
+				cursor: pointer;
+			}
+			
+			.sudoku_field_same_number {
+				background-color: DodgerBlue;
+			}
+			
+			.sudoku_field_highlight {
+				background-color: LightBlue;
+			}
+			
+			.sudoku_field_active {
+				border: 1px solid darkblue;
+				background-color: DodgerBlue;
+			}
+			
+			.sudoku_field_error {
+				background-color: red;
+			}
+			
+			.sudoku_playground_group {
+				border: 1px solid black;
+				
+			}
+			
+			#sudoku_playground {
+				border: 1px solid black;
+				border-spacing: 0;
+			}
+			
+			#sudoku_playground td {
+				padding: 0;
+			}
+			
+			#sudoku_table td {
+				vertical-align: top;
+			}
+			
+			.sudoku_control_group {
+				text-align: center;
+			}
+			
+			.sudoku_button_number {
+				background-color: DodgerBlue;
+				border: 0;
+				box-shadow: none;
+				border-radius: 0px;
+ 				width: 2em;
+				height: 2em;
+				font-weight: bold;
+				cursor: pointer;
+			}
+			
+			.sudoku_button_number_not_possible {
+				filter: grayscale(100);
+			}
+			
+			#sudoku_button_clear, #sudoku_button_solve {
+				cursor: pointer;
+			}
+			
+			#sudoku_button_delete {
+				background-color: LightGrey;
+				border: 0;
+				box-shadow: none;
+				border-radius: 0px;
+ 				width: 2em;
+				height: 2em;
+				font-weight: bold;
+				padding: 0px;
+				margin-left: 1em;
+				cursor: pointer;
+				margin-top: -1px;
+			}
+			
+			#sudoku_button_delete:active {
+				padding-left: 2px;
+			}
+		</style>
+		<script src="sudoku.js"></script>
+	</head>
+	<body>
+		<table id="sudoku_table">
+			<tr>
+				<td>
+					<table id="sudoku_playground" tabindex="0">
+						<tr>
+							<td>
+								<table class="sudoku_playground_group">
+									<tr>
+										<td id="sudoku_field11" class="sudoku_field"></td>
+										<td id="sudoku_field12" class="sudoku_field"></td>
+										<td id="sudoku_field13" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field21" class="sudoku_field"></td>
+										<td id="sudoku_field22" class="sudoku_field"></td>
+										<td id="sudoku_field23" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field31" class="sudoku_field"></td>
+										<td id="sudoku_field32" class="sudoku_field"></td>
+										<td id="sudoku_field33" class="sudoku_field"></td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<table class="sudoku_playground_group">
+									<tr>
+										<td id="sudoku_field14" class="sudoku_field"></td>
+										<td id="sudoku_field15" class="sudoku_field"></td>
+										<td id="sudoku_field16" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field24" class="sudoku_field"></td>
+										<td id="sudoku_field25" class="sudoku_field"></td>
+										<td id="sudoku_field26" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field34" class="sudoku_field"></td>
+										<td id="sudoku_field35" class="sudoku_field"></td>
+										<td id="sudoku_field36" class="sudoku_field"></td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<table class="sudoku_playground_group">
+									<tr>
+										<td id="sudoku_field17" class="sudoku_field"></td>
+										<td id="sudoku_field18" class="sudoku_field"></td>
+										<td id="sudoku_field19" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field27" class="sudoku_field"></td>
+										<td id="sudoku_field28" class="sudoku_field"></td>
+										<td id="sudoku_field29" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field37" class="sudoku_field"></td>
+										<td id="sudoku_field38" class="sudoku_field"></td>
+										<td id="sudoku_field39" class="sudoku_field"></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<table class="sudoku_playground_group">
+									<tr>
+										<td id="sudoku_field41" class="sudoku_field"></td>
+										<td id="sudoku_field42" class="sudoku_field"></td>
+										<td id="sudoku_field43" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field51" class="sudoku_field"></td>
+										<td id="sudoku_field52" class="sudoku_field"></td>
+										<td id="sudoku_field53" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field61" class="sudoku_field"></td>
+										<td id="sudoku_field62" class="sudoku_field"></td>
+										<td id="sudoku_field63" class="sudoku_field"></td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<table class="sudoku_playground_group">
+									<tr>
+										<td id="sudoku_field44" class="sudoku_field"></td>
+										<td id="sudoku_field45" class="sudoku_field"></td>
+										<td id="sudoku_field46" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field54" class="sudoku_field"></td>
+										<td id="sudoku_field55" class="sudoku_field"></td>
+										<td id="sudoku_field56" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field64" class="sudoku_field"></td>
+										<td id="sudoku_field65" class="sudoku_field"></td>
+										<td id="sudoku_field66" class="sudoku_field"></td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<table class="sudoku_playground_group">
+									<tr>
+										<td id="sudoku_field47" class="sudoku_field"></td>
+										<td id="sudoku_field48" class="sudoku_field"></td>
+										<td id="sudoku_field49" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field57" class="sudoku_field"></td>
+										<td id="sudoku_field58" class="sudoku_field"></td>
+										<td id="sudoku_field59" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field67" class="sudoku_field"></td>
+										<td id="sudoku_field68" class="sudoku_field"></td>
+										<td id="sudoku_field69" class="sudoku_field"></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<table class="sudoku_playground_group">
+									<tr>
+										<td id="sudoku_field71" class="sudoku_field"></td>
+										<td id="sudoku_field72" class="sudoku_field"></td>
+										<td id="sudoku_field73" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field81" class="sudoku_field"></td>
+										<td id="sudoku_field82" class="sudoku_field"></td>
+										<td id="sudoku_field83" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field91" class="sudoku_field"></td>
+										<td id="sudoku_field92" class="sudoku_field"></td>
+										<td id="sudoku_field93" class="sudoku_field"></td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<table class="sudoku_playground_group">
+									<tr>
+										<td id="sudoku_field74" class="sudoku_field"></td>
+										<td id="sudoku_field75" class="sudoku_field"></td>
+										<td id="sudoku_field76" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field84" class="sudoku_field"></td>
+										<td id="sudoku_field85" class="sudoku_field"></td>
+										<td id="sudoku_field86" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field94" class="sudoku_field"></td>
+										<td id="sudoku_field95" class="sudoku_field"></td>
+										<td id="sudoku_field96" class="sudoku_field"></td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<table class="sudoku_playground_group">
+									<tr>
+										<td id="sudoku_field77" class="sudoku_field"></td>
+										<td id="sudoku_field78" class="sudoku_field"></td>
+										<td id="sudoku_field79" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field87" class="sudoku_field"></td>
+										<td id="sudoku_field88" class="sudoku_field"></td>
+										<td id="sudoku_field89" class="sudoku_field"></td>
+									</tr>
+									<tr>
+										<td id="sudoku_field97" class="sudoku_field"></td>
+										<td id="sudoku_field98" class="sudoku_field"></td>
+										<td id="sudoku_field99" class="sudoku_field"></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+				
+			</tr>
+			<tr>
+				<td><hr></td>
+			</tr>
+			<tr>
+				<td class="sudoku_control_group">
+					<button type="button" id="sudoku_button_number1" class="sudoku_button_number">1</button>
+					<button type="button" id="sudoku_button_number2" class="sudoku_button_number">2</button>
+					<button type="button" id="sudoku_button_number3" class="sudoku_button_number">3</button>
+					<button type="button" id="sudoku_button_number4" class="sudoku_button_number">4</button>
+					<button type="button" id="sudoku_button_number5" class="sudoku_button_number">5</button>
+					<button type="button" id="sudoku_button_number6" class="sudoku_button_number">6</button>
+					<button type="button" id="sudoku_button_number7" class="sudoku_button_number">7</button>
+					<button type="button" id="sudoku_button_number8" class="sudoku_button_number">8</button>
+					<button type="button" id="sudoku_button_number9" class="sudoku_button_number">9</button>
+					<button type="button" id="sudoku_button_delete">&#x274c;</button>
+				</td>
+			</tr>
+			<tr>
+				<td><hr></td>
+			</tr>
+			<tr>
+				<td class="sudoku_control_group">
+					<button type="reset" id="sudoku_button_clear">&#x2610; Alle Felder leeren</button>
+					<button type="button" id="sudoku_button_solve">&#x2611; Sudoku lösen</button>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
