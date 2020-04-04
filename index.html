@@ -3,21 +3,31 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Sudoku</title>
+		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<script src="jquery.min.js"></script>
 		<style>
+			body {
+				font-family: sans-serif;
+			}
+			
 			.sudoku_field {
 				text-align: center;
 				vertical-align: middle !important;
-				font-size: large;
+				font-size: x-large;
 				font-weight: bold;
-				width: 1.8em;
-				height: 1.8em;
+				width: 1.25em;
+				height: 1.25em;
 				border: 1px dotted black;
 				cursor: pointer;
 			}
 			
-			.sudoku_field_same_number {
+			.sudoku_field_same_value_filled {
 				background-color: DodgerBlue;
+			}
+			
+			.sudoku_field_same_value_possible {
+				border: 1px solid DodgerBlue;
+				outline: 1px solid DodgerBlue;
 			}
 			
 			.sudoku_field_highlight {
@@ -33,9 +43,20 @@
 				background-color: red;
 			}
 			
-			.sudoku_playground_group {
+			.sudoku_field_possible_values {
+				font-size: 0.35em;
+				font-weight: normal;
+				width: 100%;
+				line-height: 0.8725em;
+			}
+			
+			.sudoku_field_possible_values_ruledout {
+				visibility: hidden;
+			}
+			
+			.sudoku_square {
 				border: 1px solid black;
-				
+				border-spacing: 0.2em;
 			}
 			
 			#sudoku_playground {
@@ -47,61 +68,89 @@
 				padding: 0;
 			}
 			
+			#sudoku_table {
+				margin: auto;
+			}
+			
 			#sudoku_table td {
 				vertical-align: top;
 			}
 			
-			.sudoku_control_group {
+			#sudoku_table_group_controls,
+			#sudoku_table_group_values {
 				text-align: center;
 			}
 			
-			.sudoku_button_number {
+			.sudoku_button_value {
 				background-color: DodgerBlue;
-				border: 0;
-				box-shadow: none;
-				border-radius: 0px;
- 				width: 2em;
-				height: 2em;
-				font-weight: bold;
-				cursor: pointer;
+ 				width: 1.75em;
+				display: inline-block;
 			}
 			
-			.sudoku_button_number_not_possible {
-				filter: grayscale(100);
+			.sudoku_button_value_complete {
+				background: LightGreen;
 			}
 			
-			#sudoku_button_clear, #sudoku_button_solve {
-				cursor: pointer;
+			.sudoku_button_value_wrong {
+				background: Red;
 			}
 			
-			#sudoku_button_delete {
+			button {
 				background-color: LightGrey;
 				border: 0;
 				box-shadow: none;
 				border-radius: 0px;
- 				width: 2em;
-				height: 2em;
+				width: 20em;
+				height: 1.75em;
+				line-height: 1.75em;
 				font-weight: bold;
-				padding: 0px;
-				margin-left: 1em;
 				cursor: pointer;
-				margin-top: -1px;
+				display: block;
+				padding: 0px;
+				margin: 0.25em auto;
+				font-family: sans-serif;
+				font-size: medium;
 			}
 			
-			#sudoku_button_delete:active {
-				padding-left: 2px;
+			button:disabled {
+				cursor: auto;
+			}
+			
+			#sudoku_button_delete {
+ 				width: 1.75em;
+				margin-left: 0.25em;
+				display: inline-block;
+			}
+			
+			#sudoku_table_group_settings {
+				padding: 10px;
+				display: none;
+			}
+			
+			.sudoku_settings_item {
+				margin-bottom: 1em;
+			}
+			
+			.sudoku_settings_title {
+				display: block;
+				font-weight: bold;
+				margin-bottom: 0.2em;
+			}
+			
+			.sudoku_settings_value {
+				cursor: pointer;
 			}
 		</style>
 		<script src="sudoku.js"></script>
 	</head>
 	<body>
 		<table id="sudoku_table">
-			<tr>
+			<tr id="sudoku_table_group_playground">
 				<td>
 					<table id="sudoku_playground" tabindex="0">
 						<tr>
 							<td>
-								<table class="sudoku_playground_group">
+								<table class="sudoku_square">
 									<tr>
 										<td id="sudoku_field11" class="sudoku_field"></td>
 										<td id="sudoku_field12" class="sudoku_field"></td>
@@ -120,7 +169,7 @@
 								</table>
 							</td>
 							<td>
-								<table class="sudoku_playground_group">
+								<table class="sudoku_square">
 									<tr>
 										<td id="sudoku_field14" class="sudoku_field"></td>
 										<td id="sudoku_field15" class="sudoku_field"></td>
@@ -139,7 +188,7 @@
 								</table>
 							</td>
 							<td>
-								<table class="sudoku_playground_group">
+								<table class="sudoku_square">
 									<tr>
 										<td id="sudoku_field17" class="sudoku_field"></td>
 										<td id="sudoku_field18" class="sudoku_field"></td>
@@ -160,7 +209,7 @@
 						</tr>
 						<tr>
 							<td>
-								<table class="sudoku_playground_group">
+								<table class="sudoku_square">
 									<tr>
 										<td id="sudoku_field41" class="sudoku_field"></td>
 										<td id="sudoku_field42" class="sudoku_field"></td>
@@ -179,7 +228,7 @@
 								</table>
 							</td>
 							<td>
-								<table class="sudoku_playground_group">
+								<table class="sudoku_square">
 									<tr>
 										<td id="sudoku_field44" class="sudoku_field"></td>
 										<td id="sudoku_field45" class="sudoku_field"></td>
@@ -198,7 +247,7 @@
 								</table>
 							</td>
 							<td>
-								<table class="sudoku_playground_group">
+								<table class="sudoku_square">
 									<tr>
 										<td id="sudoku_field47" class="sudoku_field"></td>
 										<td id="sudoku_field48" class="sudoku_field"></td>
@@ -219,7 +268,7 @@
 						</tr>
 						<tr>
 							<td>
-								<table class="sudoku_playground_group">
+								<table class="sudoku_square">
 									<tr>
 										<td id="sudoku_field71" class="sudoku_field"></td>
 										<td id="sudoku_field72" class="sudoku_field"></td>
@@ -238,7 +287,7 @@
 								</table>
 							</td>
 							<td>
-								<table class="sudoku_playground_group">
+								<table class="sudoku_square">
 									<tr>
 										<td id="sudoku_field74" class="sudoku_field"></td>
 										<td id="sudoku_field75" class="sudoku_field"></td>
@@ -257,7 +306,7 @@
 								</table>
 							</td>
 							<td>
-								<table class="sudoku_playground_group">
+								<table class="sudoku_square">
 									<tr>
 										<td id="sudoku_field77" class="sudoku_field"></td>
 										<td id="sudoku_field78" class="sudoku_field"></td>
@@ -278,32 +327,58 @@
 						</tr>
 					</table>
 				</td>
-				
 			</tr>
-			<tr>
-				<td><hr></td>
-			</tr>
-			<tr>
-				<td class="sudoku_control_group">
-					<button type="button" id="sudoku_button_number1" class="sudoku_button_number">1</button>
-					<button type="button" id="sudoku_button_number2" class="sudoku_button_number">2</button>
-					<button type="button" id="sudoku_button_number3" class="sudoku_button_number">3</button>
-					<button type="button" id="sudoku_button_number4" class="sudoku_button_number">4</button>
-					<button type="button" id="sudoku_button_number5" class="sudoku_button_number">5</button>
-					<button type="button" id="sudoku_button_number6" class="sudoku_button_number">6</button>
-					<button type="button" id="sudoku_button_number7" class="sudoku_button_number">7</button>
-					<button type="button" id="sudoku_button_number8" class="sudoku_button_number">8</button>
-					<button type="button" id="sudoku_button_number9" class="sudoku_button_number">9</button>
-					<button type="button" id="sudoku_button_delete">&#x274c;</button>
+			<tr id="sudoku_table_group_settings">
+				<td>
+					<div class="sudoku_settings_item">
+						<span class="sudoku_settings_title">Mögliche Werte im Sudoku:</span>
+						<input type="text" size="9" maxlength="9" name="sudoku_settings_possible_values" id="sudoku_settings_possible_values" class="sudoku_settings_value">
+					</div>
+					<div class="sudoku_settings_item">
+						<span class="sudoku_settings_title">Falsch ausgefüllte Felder kennzeichnen:</span>
+						<label><input type="radio" name="sudoku_settings_mark_wrong_fields" id="sudoku_settings_mark_wrong_fields_yes" class="sudoku_settings_value">Ja</label>
+						<label><input type="radio" name="sudoku_settings_mark_wrong_fields" id="sudoku_settings_mark_wrong_fields_no" class="sudoku_settings_value">Nein</label>
+					</div>
+					<div class="sudoku_settings_item">
+						<span class="sudoku_settings_title">Mögliche Werte für jedes Feld anzeigen:</span>
+						<label class="sudoku_settings_value"><input type="radio" name="sudoku_settings_show_possible_values" id="sudoku_settings_show_possible_values_yes">Ja</label>
+						<label class="sudoku_settings_value"><input type="radio" name="sudoku_settings_show_possible_values" id="sudoku_settings_show_possible_values_no">Nein</label>
+					</div>
+					<div class="sudoku_settings_item">
+						<span class="sudoku_settings_title">Felder mit gleichen Werten hervorheben:</span>
+						<label class="sudoku_settings_value"><input type="radio" name="sudoku_settings_highlight_same_values" id="sudoku_settings_highlight_same_values_yes">Ja</label>
+						<label class="sudoku_settings_value"><input type="radio" name="sudoku_settings_highlight_same_values" id="sudoku_settings_highlight_same_values_no">Nein</label>
+					</div>
+					<button type="button" id="sudoku_button_back_to_game">Zurück zum Spiel</button>
 				</td>
 			</tr>
-			<tr>
+			<tr class="sudoku_table_group_separator">
 				<td><hr></td>
 			</tr>
-			<tr>
-				<td class="sudoku_control_group">
-					<button type="reset" id="sudoku_button_clear">&#x2610; Alle Felder leeren</button>
-					<button type="button" id="sudoku_button_solve">&#x2611; Sudoku lösen</button>
+			<tr id="sudoku_table_group_values">
+				<td>
+					<button type="button" id="sudoku_button_value0" class="sudoku_button_value"></button>
+					<button type="button" id="sudoku_button_value1" class="sudoku_button_value"></button>
+					<button type="button" id="sudoku_button_value2" class="sudoku_button_value"></button>
+					<button type="button" id="sudoku_button_value3" class="sudoku_button_value"></button>
+					<button type="button" id="sudoku_button_value4" class="sudoku_button_value"></button>
+					<button type="button" id="sudoku_button_value5" class="sudoku_button_value"></button>
+					<button type="button" id="sudoku_button_value6" class="sudoku_button_value"></button>
+					<button type="button" id="sudoku_button_value7" class="sudoku_button_value"></button>
+					<button type="button" id="sudoku_button_value8" class="sudoku_button_value"></button>
+					<button type="button" id="sudoku_button_delete" title="Ausgewähltes Feld leeren">&#x274c;</button>
+				</td>
+			</tr>
+			<tr class="sudoku_table_group_separator">
+				<td><hr></td>
+			</tr>
+			<tr id="sudoku_table_group_controls">
+				<td>
+					<button type="button" id="sudoku_button_solve">&#x2611; Lösen</button>
+					<button type="button" id="sudoku_button_save">&#x1f5ab; Speichern</button>
+					<button type="button" id="sudoku_button_restore" disabled>&#x21a9; Zurücksetzen</button>
+					<button type="reset" id="sudoku_button_new_game">&#x1f5d1; Neues Spiel</button>
+					<button type="button" id="sudoku_button_settings">&#x2699; Einstellungen</button>
 				</td>
 			</tr>
 		</table>
